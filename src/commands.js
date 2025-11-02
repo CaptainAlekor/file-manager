@@ -5,6 +5,7 @@ import { pipeline } from 'stream/promises';
 import { ConsoleLogStream } from './consoleLogStream.js';
 import { EOL, arch, cpus, homedir, userInfo } from 'os';
 import { createHash } from 'crypto';
+import { createBrotliCompress, createBrotliDecompress } from 'zlib';
 
 export const MSG_OPERATION_FAILED = 'Operation failed';
 export const MSG_INVALID_INPUT = 'Invalid input';
@@ -193,9 +194,29 @@ export const commands = {
 
         await pipeline(
             createReadStream(path.resolve(currentDirectory, args[0])),
-            hashStream
+            hashStream,
         );
         console.log(hashStream.digest('hex'));
+
+        return currentDirectory;
+    },
+    'compress': async (args, currentDirectory) => {
+        if (
+            !args[0]
+            || !args[1]
+            || !(await fileExists(path.resolve(currentDirectory, args[0])))
+            || !(await directoryExists(path.resolve(currentDirectory, args[1])))
+        ) {
+            console.log(MSG_INVALID_INPUT);
+            return currentDirectory;
+        }
+
+        const archiveSource = path.resolve(currentDirectory, args[0]);
+        await pipeline(
+            createReadStream(archiveSource),
+            createBrotliCompress(),
+            createWriteStream(path.resolve(currentDirectory, args[1], path.basename(archiveSource) + '.br')),
+        );
 
         return currentDirectory;
     },
