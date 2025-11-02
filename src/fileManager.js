@@ -53,7 +53,11 @@ async function handleUserInput(input, currentDirectory) {
     const command = commandParts[0];
     const processCommand = commands[command];
     if (processCommand) {
-        currentDirectory = await processCommand(commandParts.slice(1), currentDirectory);
+        try {
+            currentDirectory = await processCommand(commandParts.slice(1), currentDirectory);
+        } catch (_) {
+            console.log(MSG_OPERATION_FAILED);
+        }
     } else {
         console.log(MSG_INVALID_INPUT);
     }
