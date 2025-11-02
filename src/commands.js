@@ -1,11 +1,12 @@
 import path from 'node:path';
-import { readdir, stat, writeFile, mkdir, rename, unlink } from 'fs/promises';
+import { mkdir, readdir, rename, unlink, writeFile } from 'fs/promises';
 import { createReadStream, createWriteStream } from 'fs';
 import { pipeline } from 'stream/promises';
 import { ConsoleLogStream } from './consoleLogStream.js';
-import { EOL, arch, cpus, homedir, userInfo } from 'os';
+import { arch, cpus, EOL, homedir, userInfo } from 'os';
 import { createHash } from 'crypto';
 import { createBrotliCompress, createBrotliDecompress } from 'zlib';
+import { directoryExists, fileExists } from './fsUtils.js';
 
 export const MSG_OPERATION_FAILED = 'Operation failed';
 export const MSG_INVALID_INPUT = 'Invalid input';
@@ -247,12 +248,4 @@ export const commands = {
         process.exit();
     },
 };
-
-async function directoryExists(directoryPath) {
-    return (await stat(directoryPath)).isDirectory();
-}
-
-async function fileExists(filePath) {
-    return (await stat(filePath)).isFile();
-}
 
