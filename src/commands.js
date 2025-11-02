@@ -77,7 +77,7 @@ export const commands = {
         return currentDirectory;
     },
     'add': async (args, currentDirectory) => {
-        if (!args[0]) {
+        if (!args[0] || path.basename(args[0]) !== args[0]) {
             console.log(MSG_INVALID_INPUT);
             return currentDirectory;
         }
