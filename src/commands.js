@@ -148,6 +148,19 @@ export const commands = {
 
         return currentDirectory;
     },
+    'rm': async (args, currentDirectory) => {
+        if (
+            !args[0]
+            || !(await fileExists(path.resolve(currentDirectory, args[0])))
+        ) {
+            console.log(MSG_INVALID_INPUT);
+            return currentDirectory;
+        }
+
+        await unlink(path.resolve(currentDirectory, args[0]));
+
+        return currentDirectory;
+    },
 };
 
 async function directoryExists(directoryPath) {
