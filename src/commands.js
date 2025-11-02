@@ -9,7 +9,7 @@ export const MSG_INVALID_INPUT = 'Invalid input';
 
 export const commands = {
     'up': async (_, currentDirectory) => {
-        const nextDirectory = path.join(currentDirectory, '..');
+        const nextDirectory = path.resolve(currentDirectory, '..');
 
         if (await directoryExists(nextDirectory) === false) {
             console.log(MSG_OPERATION_FAILED);
@@ -24,7 +24,7 @@ export const commands = {
             return currentDirectory;
         }
 
-        const nextDirectory = path.join(currentDirectory, args[0]);
+        const nextDirectory = path.resolve(currentDirectory, args[0]);
 
         if (await directoryExists(nextDirectory) === false) {
             console.log(MSG_OPERATION_FAILED);
@@ -69,7 +69,7 @@ export const commands = {
 
         console.log();
         await pipeline(
-            createReadStream(path.join(currentDirectory, args[0])),
+            createReadStream(path.resolve(currentDirectory, args[0])),
             new ConsoleLogStream(),
         );
         console.log();
