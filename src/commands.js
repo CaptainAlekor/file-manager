@@ -1,5 +1,5 @@
 import path from 'node:path';
-import { readdir, stat, writeFile, mkdir } from 'fs/promises';
+import { readdir, stat, writeFile, mkdir, rename } from 'fs/promises';
 import { createReadStream } from 'fs';
 import { pipeline } from 'stream/promises';
 import { ConsoleLogStream } from './consoleLogStream.js';
@@ -96,6 +96,23 @@ export const commands = {
 
         return currentDirectory;
     },
+    'rn': async (args, currentDirectory) => {
+        if (
+            !args[0]
+            || !args[1]
+            || path.basename(args[1]) !== args[1]
+        ) {
+            console.log(MSG_INVALID_INPUT);
+            return currentDirectory;
+        }
+
+        await rename(
+            path.resolve(currentDirectory, args[0]),
+            path.resolve(currentDirectory, path.dirname(args[0]), args[1])
+        )
+
+        return currentDirectory;
+    }
 };
 
 async function directoryExists(directory) {
