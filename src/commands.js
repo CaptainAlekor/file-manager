@@ -1,5 +1,8 @@
 import path from 'node:path';
 import { readdir, stat } from 'fs/promises';
+import { createReadStream } from 'fs';
+import { pipeline } from 'stream/promises';
+import { ConsoleLogStream } from './consoleLogStream.js';
 
 export const MSG_OPERATION_FAILED = 'Operation failed';
 export const MSG_INVALID_INPUT = 'Invalid input';
@@ -55,6 +58,21 @@ export const commands = {
         ];
 
         console.table(sortedDirectoryEntries);
+
+        return currentDirectory;
+    },
+    'cat': async (args, currentDirectory) => {
+        if (!args[0]) {
+            console.log(MSG_INVALID_INPUT);
+            return currentDirectory;
+        }
+
+        console.log();
+        await pipeline(
+            createReadStream(path.join(currentDirectory, args[0])),
+            new ConsoleLogStream(),
+        );
+        console.log();
 
         return currentDirectory;
     },
