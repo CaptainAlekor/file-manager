@@ -8,8 +8,9 @@ function handleUser() {
 
     console.log(`Welcome to the File Manager, ${username}!`);
 
-    process.on('exit', () => {
-        console.log(`Thank you for using File Manager, ${username}, goodbye!`);
+    process.on('SIGINT', () => {
+        console.log(`\nThank you for using File Manager, ${username}, goodbye!`);
+        process.exit();
     })
 }
 
