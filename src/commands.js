@@ -1,5 +1,5 @@
 import path from 'node:path';
-import { readdir, stat, writeFile, mkdir, rename } from 'fs/promises';
+import { readdir, stat, writeFile, mkdir, rename, unlink } from 'fs/promises';
 import { createReadStream, createWriteStream } from 'fs';
 import { pipeline } from 'stream/promises';
 import { ConsoleLogStream } from './consoleLogStream.js';
@@ -127,6 +127,24 @@ export const commands = {
             createReadStream(path.resolve(currentDirectory, args[0])),
             createWriteStream(path.resolve(currentDirectory, args[1], path.basename(args[0]))),
         );
+
+        return currentDirectory;
+    },
+    'mv': async (args, currentDirectory) => {
+        if (
+            !args[0]
+            || !args[1]
+            || !(await fileExists(path.resolve(currentDirectory, args[0])))
+        ) {
+            console.log(MSG_INVALID_INPUT);
+            return currentDirectory;
+        }
+
+        await pipeline(
+            createReadStream(path.resolve(currentDirectory, args[0])),
+            createWriteStream(path.resolve(currentDirectory, args[1], path.basename(args[0]))),
+        );
+        await unlink(path.resolve(currentDirectory, args[0]));
 
         return currentDirectory;
     },
