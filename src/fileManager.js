@@ -6,8 +6,15 @@ const MSG_OPERATION_FAILED = 'Operation failed';
 const MSG_INVALID_INPUT = 'Invalid input';
 
 const commands = {
-    'up': (_, currentDirectory) => {
-        return path.join(currentDirectory, '..');
+    'up': async (_, currentDirectory) => {
+        const nextDirectory = path.join(currentDirectory, '..');
+
+        if (await directoryExists(nextDirectory) === false) {
+            console.log(MSG_OPERATION_FAILED);
+            return currentDirectory;
+        }
+
+        return nextDirectory;
     },
     'cd': async (args, currentDirectory) => {
         if (!args[0]) {
@@ -15,16 +22,20 @@ const commands = {
             return currentDirectory;
         }
 
-        const newDirectory = path.join(currentDirectory, args[0]);
+        const nextDirectory = path.join(currentDirectory, args[0]);
 
-        if ((await stat(newDirectory)).isDirectory() === false) {
+        if (await directoryExists(nextDirectory) === false) {
             console.log(MSG_OPERATION_FAILED);
             return currentDirectory;
         }
 
-        return newDirectory;
+        return nextDirectory;
     },
 };
+
+async function directoryExists(directory) {
+    return (await stat(directory)).isDirectory();
+}
 
 function runFileManager() {
     let currentDirectory = os.homedir();
