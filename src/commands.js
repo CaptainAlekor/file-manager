@@ -1,5 +1,5 @@
 import path from 'node:path';
-import { readdir, stat, writeFile } from 'fs/promises';
+import { readdir, stat, writeFile, mkdir } from 'fs/promises';
 import { createReadStream } from 'fs';
 import { pipeline } from 'stream/promises';
 import { ConsoleLogStream } from './consoleLogStream.js';
@@ -83,6 +83,16 @@ export const commands = {
         }
 
         await writeFile(path.resolve(currentDirectory, args[0]), '');
+
+        return currentDirectory;
+    },
+    'mkdir': async (args, currentDirectory) => {
+        if (!args[0] || path.basename(args[0]) !== args[0]) {
+            console.log(MSG_INVALID_INPUT);
+            return currentDirectory;
+        }
+
+        await mkdir(path.resolve(currentDirectory, args[0]));
 
         return currentDirectory;
     },
