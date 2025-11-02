@@ -182,6 +182,9 @@ export const commands = {
 
         return currentDirectory;
     },
+    '.exit': async () => {
+        process.exit();
+    },
 };
 
 async function directoryExists(directoryPath) {
