@@ -4,6 +4,7 @@ import { createReadStream, createWriteStream } from 'fs';
 import { pipeline } from 'stream/promises';
 import { ConsoleLogStream } from './consoleLogStream.js';
 import { EOL, arch, cpus, homedir, userInfo } from 'os';
+import { createHash } from 'crypto';
 
 export const MSG_OPERATION_FAILED = 'Operation failed';
 export const MSG_INVALID_INPUT = 'Invalid input';
@@ -179,6 +180,22 @@ export const commands = {
         }
 
         console.log(osCommandArgs[args[0]]);
+
+        return currentDirectory;
+    },
+    'hash': async (args, currentDirectory) => {
+        if (!args[0] || !(await fileExists(path.resolve(currentDirectory, args[0])))) {
+            console.log(MSG_INVALID_INPUT);
+            return currentDirectory;
+        }
+
+        const hashStream = createHash('sha256');
+
+        await pipeline(
+            createReadStream(path.resolve(currentDirectory, args[0])),
+            hashStream
+        );
+        console.log(hashStream.digest('hex'));
 
         return currentDirectory;
     },
