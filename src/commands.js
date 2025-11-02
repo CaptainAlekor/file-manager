@@ -3,9 +3,20 @@ import { readdir, stat, writeFile, mkdir, rename, unlink } from 'fs/promises';
 import { createReadStream, createWriteStream } from 'fs';
 import { pipeline } from 'stream/promises';
 import { ConsoleLogStream } from './consoleLogStream.js';
+import { EOL, arch, cpus, homedir, userInfo } from 'os';
 
 export const MSG_OPERATION_FAILED = 'Operation failed';
 export const MSG_INVALID_INPUT = 'Invalid input';
+
+const osCommandArgs = {
+    '--EOL': EOL,
+    '--cpus':
+        `Cpus count: ${cpus().length}\n`
+        + cpus().map((cpu, index) => `${index}: ${cpu.model} ${cpu.speed / 1000} GHz`).join('\n'),
+    '--homedir': homedir(),
+    '--username': userInfo().username,
+    '--architecture': arch(),
+};
 
 export const commands = {
     'up': async (_, currentDirectory) => {
@@ -158,6 +169,16 @@ export const commands = {
         }
 
         await unlink(path.resolve(currentDirectory, args[0]));
+
+        return currentDirectory;
+    },
+    'os': async (args, currentDirectory) => {
+        if (!args[0] || !(args[0] in osCommandArgs)) {
+            console.log(MSG_INVALID_INPUT);
+            return currentDirectory;
+        }
+
+        console.log(osCommandArgs[args[0]]);
 
         return currentDirectory;
     },
