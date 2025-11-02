@@ -19,10 +19,11 @@ function runFileManager() {
 }
 
 function handleUserInput(input, currentDirectory) {
-    const command = input.split(' ')[0];
+    const commandParts = input.split(' ');
+    const command = commandParts[0];
     const processCommand = commands[command];
     if (processCommand) {
-        currentDirectory = processCommand(input, currentDirectory);
+        currentDirectory = processCommand(commandParts.slice(1), currentDirectory);
     } else {
         console.log(`Unknown command: ${command}`);
     }
