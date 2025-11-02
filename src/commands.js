@@ -220,6 +220,29 @@ export const commands = {
 
         return currentDirectory;
     },
+    'decompress': async (args, currentDirectory) => {
+        if (
+            !args[0]
+            || !args[1]
+            || !(await fileExists(path.resolve(currentDirectory, args[0])))
+            || !(await directoryExists(path.resolve(currentDirectory, args[1])))
+        ) {
+            console.log(MSG_INVALID_INPUT);
+            return currentDirectory;
+        }
+
+        const archiveSource = path.resolve(currentDirectory, args[0]);
+
+        await pipeline(
+            createReadStream(archiveSource),
+            createBrotliDecompress(),
+            createWriteStream(
+                path.resolve(currentDirectory, args[1], path.basename(archiveSource).slice(0, -3)),
+            ),
+        );
+
+        return currentDirectory;
+    },
     '.exit': async () => {
         process.exit();
     },
